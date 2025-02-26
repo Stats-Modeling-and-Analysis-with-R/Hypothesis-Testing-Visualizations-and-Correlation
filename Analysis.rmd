@@ -1,0 +1,392 @@
+---
+title: "Hypothesis-Testing-Visualizations-and-Correlation"
+output:
+  pdf_document: default
+  html_notebook: default
+  html_document:
+    df_print: paged
+---
+
+# Question 1:
+The time between the date a patient was recommended for heart surgery and the surgery date for cardiac patients in Ontario was collected by the Cardiac Care Network (“Wait Times Data Guide,” Ministry of Health and Long-Term Care, Ontario, Canada, 2006). The sample mean and sample standard deviation for wait times (in days) of patients for two cardiac procedures are given in the accompanying table. Assume that the sample is representative of the Ontario population.
+
+Bypass:
+- N = 539
+- μ = 19
+- σ = 81
+
+
+Angiography:
+- N = 847
+- μ = 18
+- σ = 100
+
+1) Construct the 90% & 95% confidence intervals for both the bypass and angiography procedures.
+
+```{r}
+# 90 and 95 CI for Bypass
+N <- 539
+mu <- 19
+sd <- 81
+se <- sd/sqrt(N)
+a <- 0.05
+cv <- qnorm(p=a/2, lower.tail = FALSE) * se
+ci_lower <- mu - cv
+ci_high <- mu + cv
+sprintf("CV: %f", cv)
+sprintf("Bypass 95%%  CI:  [%f, %f]", ci_lower, ci_high)
+
+a <- 0.01
+cv <- qnorm(p=a/2, lower.tail = FALSE) * se
+ci_lower <- mu - cv
+ci_high <- mu + cv
+sprintf("CV: %f", cv)
+sprintf("Bypass 90%%  CI:  [%f, %f]", ci_lower, ci_high)
+
+# 90 and 95 CI for Angiography
+N <- 847
+mu <- 18
+sd <- 100
+se <- sd/sqrt(N)
+a <- 0.05
+cv <- qnorm(p=a/2, lower.tail = FALSE) * se
+ci_lower <- mu - cv
+ci_high <- mu + cv
+sprintf("CV: %f", cv)
+sprintf("Angiography 95%%  CI:  [%f, %f]", ci_lower, ci_high)
+
+a <- 0.01
+cv <- qnorm(p=a/2, lower.tail = FALSE) * se
+ci_lower <- mu - cv
+ci_high <- mu + cv
+sprintf("CV: %f", cv)
+sprintf("Angiography 90%%  CI:  [%f, %f]", ci_lower, ci_high)
+```
+
+2) Is the confidence interval narrower for angiography or bypass surgery?
+
+```{r}
+cv_90_bypass <- 6.838152
+cv_95_bypass <- 8.986855
+
+cv_90_angi <- 6.734516
+cv_95_angi <- 8.850654
+
+print(cv_90_bypass-cv_90_angi)
+print(cv_95_bypass-cv_95_angi)
+print("The CI of angiography is narrower than bypass surgery")
+
+```
+
+3) What happens to the size of the CI between the 90% and 95% levels? Why?
+
+Answer: The size of the CI increases between the 90% and 95% levels. This is because when you increase from 90% to 95% CI the critical value increases (1.64 to 1.96) which increases the CI range since CI = CV * SE. Increasing from 90% to 95% means you're increasing the probability that the true mean is within the range specified in the CI. To get a higher chance, the size of the CI has to be greater i.e. casting a wider net the true mean is within the range.
+
+# Question 2:
+Data: Survey of 1031 adult Americans by the National Center for Public Policy
+Survey Response: 567 of the 1031 adults said college education is essential for success
+Tasks:
+- Find the point estimate, p, of the proportion of all adult Americans who believe college education is essential.
+
+```{r}
+p <- 567/1031
+sprintf("The point estimate for proportion of all adult Americans who believe college education is essential: %f", p)
+```
+
+- Construct and interpret the 95% & 99% confidence intervals for p.
+
+```{r}
+p <- 567/1031
+n <-  1031
+bi_data <- rbinom(1031, 1, p)
+se <- sqrt((p*(1-p)/n))
+
+a <- 0.05
+cv <- qnorm(p=a/2, lower.tail = FALSE) * se
+ci_lower <- p - cv
+ci_high <- p + cv
+sprintf("95%%  CI:  [%f, %f]", ci_lower, ci_high)
+print("There is 95% confidence that the true population mean of Americans we believe a college education is important is within the range [0.519584, 0.580319]")
+print("Side note: I dont think I'm supposed to say 'I believe' because LSR said that's bayesian termonology and CI is frequentest.")
+a <- 0.01
+cv <- qnorm(p=a/2, lower.tail = FALSE) * se
+ci_lower <- p - cv
+ci_high <- p + cv
+sprintf("99%%  CI:  [%f, %f]", ci_lower, ci_high)
+print("There is 99% confidence that the true population mean of Americans who believe a college education is important is within the range [0.510042, 0.589861]")
+
+```
+
+
+- Explain how and why the size of the CI changes between the 95% and 99% levels.
+
+The size of the CI increases when changing from a 95% to a 99% level. This is because going from 95% to 99% changes the critical value from 1.96 to 2.58 which causes our CI to grow due to the formula for CI being ci += mean +- cv * se. Since we want to be more confident regarding where the true population mean lies, we must increase our range.
+
+
+# Question 3:
+Charlie took the SAT while Sam took the ACT. They were both bragging about how well they did; however, because the
+two standardized test scores are measured on different scales they did not know who actually did better relative to the average score for the respective test. Your job is to break their impasse and decide which actually did better on their test.
+SAT Scores:
+- μ = 1028
+- σ = 209
+- Charlie's SAT Score = 1536
+
+ACT Scores:
+- μ = 19.8
+- σ = 5.3
+- Sam's ACT Score = 33
+
+Using the above information…
+- Calculate the z-score for both Charlie and Sam
+
+```{r}
+# Charlie z-score
+mu <- 1028
+sd <- 209
+x <- 1536
+
+z_score_c <- (x-mu)/sd
+sprintf("Charlie's z-score is: %f", z_score_c)
+
+# Sam z-score
+mu <- 19.8
+sd <- 5.3
+x <- 5.3
+
+z_score_s <- (x-mu)/sd
+sprintf("Sam's z-score is: %f", z_score_s)
+```
+
+- Draw a conclusion on who actually did better on their test relative to the average person who took it.
+
+Charlie's z-score suggests he did 2.43 standard deviations better than the mean in his group while Sam's z-score suggests she did 2.735 standard deviations worse than the mean for her group. Thus Charlie did better relative to the average of his group than Sam did in her group.
+
+- Using both z-scores, estimate what percentage of test takers each one outperformed on their specific test.
+```{r}
+sprintf("Charlie is in the %f percentile of his group. Thus he outperformed about %f%% people in his group", pnorm(z_score_c)*100, pnorm(z_score_c)*100)
+sprintf("Same is in the %f percentile of her group. Thus she outperformed about %f%% people in her group", pnorm(z_score_s)*100, pnorm(z_score_s)*100)
+
+```
+# Question 4:
+(Exercise 6.7, Chapter 6 of SMSS, Agresti 2018) According to a union agreement, the mean income for all senior-level workers in a large service company equals $500 per week. A representative of a women’s group decides to analyze whether the mean income μ for female employees matches this norm. For a random sample of nine female employees, ȳ = $410 and s = 90.
+
+Tasks:
+- Test if the mean income of female employees differs from $500/week. Include assumptions, hypotheses, test statistic, and P-value.
+
+Answer:
+Assumptions
+- The dependent variable is approximately standard normal
+- The dependent variable is continuously distributed
+Hypothesis:
+- Ho: mu_sample = mu_population
+- Ha: mu_sample != mu_population
+Result: Based on the code below
+- test statistic: -3
+- p-value: 0.01707
+- We reject the null hypothesis because the p-value is not greater than 0.05
+
+```{r}
+# helper function to generate data so we can just use t.test
+generate_data_with_exact_mean_std <- function(n, mean, std) {
+  # Step 1: Generate random data
+  data <- rnorm(n)  # Generate standard normal distribution (mean=0, std=1)
+  # Step 2: Normalize the data (mean=0, std=1)
+  data <- (data - mean(data)) / sd(data)
+  # Step 3: Scale and shift to get the desired mean and std
+  data <- data * std + mean
+  return(data)
+}
+
+n <- 9
+mean_sample <- 410
+mean_pop <- 500
+sd <- 90
+
+data <- generate_data_with_exact_mean_std(n, mean_sample, sd)
+
+print(mean(data))
+print(sd(data))
+
+t.test(data, mu=mean_pop, conf.level = 0.95)
+a <- 0.05
+print(a<0.01707)
+
+```
+
+
+- Report and interpret the p-values for Ha: μ<500 and Ha: μ>500
+
+The p value for μ>500 is 0.9915. This value is greater than 0.05 thus we fail to reject the null. This indicates we believe the true mean for womens wages is propably not greater than 500
+The p value for μ<500 is 0.008536. This value is less than 0.05 thus we reject the null. This indicates we believe the true mean for womens wages is propably less than 500
+```{r}
+t.test(data, mu=mean_pop, conf.level = 0.95,alternative = "greater")
+t.test(data, mu=mean_pop, conf.level = 0.95,alternative = "less")
+```
+
+# Question 5:
+(Exercise 6.23, Chapter 6 of SMSS, Agresti 2018)
+Jones and Smith separately conduct studies using the same sampling and measurement approach. They have the same null and alternative hypotheses:
+- H0: μ = 500 against
+- Ha : μ ≠ 500,
+
+Both researchers collect 1000 responses and find the following statistical estimates from their respective sample:
+- Jones: ȳ = 519.5 with se = 10.0.
+- Smith: ȳ = 519.7 with se = 10.0.
+
+1) Show that t = 1.95 and P-value = 0.051 for Jones. Show that t = 1.97 and P-value = 0.049 for Smith.
+
+```{r}
+mean_pop <- 500
+
+# Jones
+n <- 1000
+df <- n-1
+mean_sample <- 519.5
+se <- 10.0
+
+t_j <- (mean_sample-mean_pop)/se
+p_value <- 2 * pt(-abs(t_j), df)
+sprintf("Jones t = %f and P-value = %f", t_j, p_value)
+
+# Smith
+n <- 1000
+mean_sample <- 519.7
+se <- 10.0
+
+t_s <- (mean_sample-mean_pop)/se
+p_value <- 2 * pt(-abs(t_s), df)
+sprintf("Smith t = %f and P-value = %f", t_s, p_value)
+```
+
+2) Using α = 0.05, for each study indicate whether the result is “statistically significant.”
+If α = 0.05, then Jones' result would be not be considered significant as it is greater than 0.05. Thus, Jones fails to reject the null.
+If α = 0.05, then Smith's result would be considered significant as it is less than 0.05. Thus, Smith would reject the null.
+
+3) Using this example, explain the misleading aspects of reporting the result of a test as “P ≤ 0.05” versus “P > 0.05,” or as “reject H0” versus “Do not reject H0 ,” without reporting the actual P-value.
+The reason only reporting the "reject H0" or "Do not rejecft H0" is misleading is becauses, as the example shown above results can just barely make a cut off. The cut off in itself can also be arbitrary and should not be taken as face value as the finding being important or value just based on the P value. Jones and Smith both essentially did the same thing, but their final results were opposite due to simple probability. This is why its important to understand and read research paper results in their entirety to get full context. The p-value is just a number. Not a final answer on a report.
+
+
+# Question 6:
+According to the American Petroleum Institute, the per gallon federal tax that was levied on gasoline was 18.4 cents per gallon in the United States in the year 2005. However, state and local taxes vary over the same period. The sample data of gasoline taxes for 18 randomly selected large cities is given below in the variable called gas_taxes.
+
+gas_taxes <- c(51.27, 47.43, 38.89, 41.95, 28.61, 41.29, 52.19, 49.48, 35.02, 48.13, 39.28, 54.41, 41.66, 30.28, 18.49, 38.72, 33.41, 45.02)
+
+Is there enough evidence to conclude at a 95% confidence level that the average tax per gallon of gas in these US cities in 2005 was less than 45 cents? Explain.
+
+```{r}
+mu_h0 <- 45
+n <- 18
+
+gas_taxes <- c(51.27, 47.43, 38.89, 41.95, 28.61, 41.29, 52.19, 49.48, 35.02, 48.13, 39.28, 54.41, 41.66, 30.28, 18.49, 38.72, 33.41, 45.02)
+
+mu_sample <- mean(gas_taxes)
+sd <- sd(gas_taxes)
+mu_sample
+
+t.test(gas_taxes, mu=mu_h0, conf.level = 0.95,alternative = "less")
+
+print("The p-value of 0.03827 is less than 0.05, thus we reject the null hypothesis that the average use city tax per gallon of gas is the same as 45 cents. Our sample data and t test show there's a 95% chance our true mean is in the range of [-inf, 44.68]")
+```
+
+# Question 7:
+Load the UN11 dataset from the alr4 package then answer the following.
+
+ United Nations (Data file: UN11) The data in the file UN11 contains several variables, including ppgdp, the gross national product per person in U.S. dollars, and fertility, the birth rate per 1000 females, both from the year 2009. The data are for 199 localities, mostly UN member countries, but also other areas such as Hong Kong that are not independent countries. The data were collected from the United Nations (2011). We will study the dependence of fertility on ppgdp.
+
+Tasks:
+1) Identify and list the predictor variable (IV) and the outcome variable (DV).
+
+```{r}
+library(alr4)
+data(UN11)
+names(UN11)
+dim(UN11)
+#skim(UN11)
+#head(UN11)
+
+print("DV: ppgdp")
+print("IV: fertility")
+print("Others Variables: region, group, lifeExpF, pctUrban")
+```
+
+2) Create a scatterplot of fertility on the y-axis versus ppgdp on the x-axis. Then summarize what you see in the graph. Does a linear, best-fit line seem to be plausible for a summary of this graph?
+Observations: Based on the scatterplot produced below I see the following things:
+- A negative trending data. It seems like as PPGDP increases the fertility rate goes down.
+- The data has a dew outlier variables in the right tail of the chart. This seems to indicate there are far more poor countries compared to wealthy, high PPGDP, countries.
+- The data isn't a straight line, it is slight half U shaped.
+- The data has more variance clustered on the low PPGDP side. The is a large spread of fertility rates (1-7) around the left side of the low side of the X axis. Meanwhile on the higher end, it seems to converge to 1-2 fertility rate on the higher ends of PPGDP.
+
+Conclusion: Based on the observations described above, there seems to be a trend in the data for fertility and PPGDP shown on this chart that indicates a line of best fit is plausible (especially if we account for outliers/extreme values).
+
+```{r}
+plot(x=UN11$ppgdp, y=UN11$fertility,
+     main = "PPGDP vs Fertility",
+     xlab = "PPGDP",
+     ylab = "Fertility",
+     pch = 19, col = "blue")
+```
+
+3) Add the Pearson’s R correlation coefficient to the graph
+
+```{r}
+correlation <- cor(x=UN11$ppgdp, y=UN11$fertility)
+
+plot(x=UN11$ppgdp, y=UN11$fertility,
+     main = "PPGDP vs Fertility",
+     xlab = "PPGDP",
+     ylab = "Fertility",
+     pch = 19, col = "blue")
+
+cor(UN11[, c("ppgdp", "fertility")])
+
+abline(lm(fertility ~ ppgdp, data = UN11), col = "red")
+```
+
+# Question 8:
+1) Load the ‘water’ dataset from the alr4 package then answer the following. This dataset represents 43 years’ worth of precipitation measurements at 6 sites taken in the Sierra Nevada mountains (in California) along with the volume of stream runoff at a specific site in Bishop, CA.
+
+```{r}
+data(water)
+names(water)
+dim(water)
+head(water)
+
+```
+
+2) Create one scatterplot that contains the following variables found in the dataset
+   1) APMAM, APSAB, APSLAKE, OPBPC, OPRC, OPSLAKE
+      1) Hint: To understand exactly what these measures are, in R simply type - ?water
+
+```{r}
+pairs(water[, c("APMAM", "APSAB", "APSLAKE", "OPBPC", "OPRC", "OPSLAKE")],
+      main = "Scatterplot Matrix of Water Dataset Variables",
+      pch = 19, col = "blue")
+```
+
+   2) Interpret what you see in the scatterplot. Which variables appear to be correlated with each other and which ones are not?
+   The scatter plot matrix above shows how the columns APMAM, APSAB, APSLAKE, OPBPC, OPRC, OPSLAKE each correlate to another. This is essentially a correlation matrix but instead of numbers or heatmaps, its scatter plots that show the possible trends between all the variables.
+   Groups that seem correlated (ignoring trends previously mentioned as to not repeat myself):
+   - APMAM: Seems to have some positive correlations with APSAB, APSLAKE, OPBPC. As APMAM increases, it seems so do they.
+   - APSAB: Seems to be postively coreraleted with APSLAKE as well. There seems to be a positibe trend where as APSAB increases, so does APSLAKE.
+   - APSLAKE: APSLAKE doesn't seem to have any further correlations that weren't already mentioned.
+   - OPBPC: OPBPC seems to trend positively with OPRC and OPSLAKE.
+   - OPRC: OPRC also trends positively with OPSLAKE
+   - OPSLAKE: Already mentioned trends above.
+   Groups that DO NOT seem correlated (ignoring trends previously mentioned as to not repeat myself):
+   - APMAM: Seems to not be correlated with OPRC and OPSLAKE. They all seem to be clustered about in the bottom left corner but there doesn't seem to be much of a trend.
+   - APSAB: APSAB does not seem to be correlated much with OPBPC, OPRC, or OPSLAKE. All of them are somewhat clustered in the left corner with a high spread and not much of a trend (maybe a neutral trend line?).
+   - APSLAKE: It seems there is no correlation with OPBPC, OPRC, or OPSLAKE
+   - OPBPC: Already mentioned NON trends above.
+   - OPRC: Already mentioned NON trends above.
+   - OPSLAKE: Already mentioned NON trends above.
+
+   3) Now, calculate a Pearson R’s correlation for each of the pairwise comparisons and interpret what you see in the results.
+      - APMAM: Does have a high positive correlation with APSAB and APSAB. It has a low (close to 0) score for OPBPC, OPRC, and OPSLAKE so it seems they are not linearily related. I was wrong in my previous oberservation when I thought APMAM and OPBPC may have a relationship.
+      - APSAB & APSLAKE: These two also have a high positive correlation. They are positively linearily correlated.
+      - OPBPC: Has a high positive correlation with OPRC and OPSLAKE. They are positively linearily correlated.
+      - OPRC & OPSLAKE:OPRC and OPSLAKE are positively linearily correlated.
+```{r}
+# Calculate the Pearson correlation matrix
+correlation_matrix <- cor(water[, c("APMAM", "APSAB", "APSLAKE", "OPBPC", "OPRC", "OPSLAKE")])
+correlation_matrix
+```
